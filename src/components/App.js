@@ -30,7 +30,7 @@ import { firebase } from '../firebase';
 import withAuthentication from './withAuthentication';
 
 const App = () =>
-  <Router>
+  <Router basename={process.env.PUBLIC_URL}>
     <div>
       <Navigation />
 

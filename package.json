@@ -2,7 +2,7 @@
   "name": "react-firebase-authentication",
   "version": "0.1.0",
   "private": true,
-	"homepage": "http://vishalseshagiri.github.io/reverse_dictionary_react_app",
+	"homepage": "https://vishalseshagiri.github.io/reverse_dictionary_react_app",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "firebase": "^4.12.0",
