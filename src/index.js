@@ -15,6 +15,5 @@ import registerServiceWorker from './registerServiceWorker';
 import './include/bootstrap'
 
 // <App /> class component is a part of the App module we imported in line 8
-console.log(process.env.PUBLIC_URL);
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker(); 
