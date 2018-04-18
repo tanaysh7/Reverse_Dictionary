@@ -18,9 +18,11 @@ const devConfig = {
     messagingSenderId: "409785833121"
 };
 
-const config = process.env.NODE_ENV === 'production'
-    ? prodConfig
-    : devConfig;
+const config = devConfig;
+
+// const config = process.env.NODE_ENV === 'production'
+//     ? prodConfig
+    // : devConfig;
 
 if (!firebase.apps.length){
     firebase.initializeApp(config);

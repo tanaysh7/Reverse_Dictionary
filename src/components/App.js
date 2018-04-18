@@ -40,12 +40,12 @@ const App = () =>
 			- so using exact path matches only this URL
 			- it won't match /1 or /2 or any other nonsense like that	
 			 */}
-      <Route exact path={process.env.PUBLIC_URL + routes.LANDING} component={() => <LandingPage />} />
-      <Route exact path={process.env.PUBLIC_URL + routes.SIGN_UP} component={() => <SignUpPage />} />
-      <Route exact path={process.env.PUBLIC_URL + routes.SIGN_IN} component={() => <SignInPage />} />
-      <Route exact path={process.env.PUBLIC_URL + routes.PASSWORD_FORGET} component={() => <PasswordForgetPage />} />
-      <Route exact path={process.env.PUBLIC_URL + routes.HOME} component={() => <HomePage />} />
-      <Route exact path={process.env.PUBLIC_URL + routes.ACCOUNT} component={() => <AccountPage />} />
+      <Route exact path={routes.LANDING} component={() => <LandingPage />} />
+      <Route exact path={routes.SIGN_UP} component={() => <SignUpPage />} />
+      <Route exact path={routes.SIGN_IN} component={() => <SignInPage />} />
+      <Route exact path={routes.PASSWORD_FORGET} component={() => <PasswordForgetPage />} />
+      <Route exact path={routes.HOME} component={() => <HomePage />} />
+      <Route exact path={routes.ACCOUNT} component={() => <AccountPage />} />
     </div>
   </Router>
 
