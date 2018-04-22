@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+
+<body onload="History()" >
+<h2>Fire base webapp</h2>
+
+<br/><br/><br/>
+<!--https://firebase.google.com/docs/database/web/read-and-write?authuser=0-->
+
+<select id="POS">
+  <option value="n">Noun</option>
+  <option value="v">Verb</option>
+  <option value="a">Adjective</option>
+  <option value="s">Adverb</option>
+</select>
+
+Enter the word: <input type="text" id="wname">
+<button onclick="Result()" >define</button>
+
+<br/><br/><br/>
+
+<span id="result"></span>
+
+<br/><br/><br/>
+
+
+
+(This supports multiple words and results stored in history)
+<br>
+Enter the definition word: <input type="text" id="rname">
+<button onclick="Reverse()" >dict words</button>
+
+<br/><br/><br/>
+
+<span id="revresult"></span>
+<br/><br/><br/>
+
+
+
+
+
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBK03WFa_R8L1am35E_SIC3FlmE2jaWdVA",
+    authDomain: "inf551-2a2dd.firebaseapp.com",
+    databaseURL: "https://inf551-2a2dd.firebaseio.com",
+    projectId: "inf551-2a2dd",
+    storageBucket: "inf551-2a2dd.appspot.com",
+    messagingSenderId: "764354013863"
+  };
+  firebase.initializeApp(config);
+var database = firebase.database();
+var user="user2";
+
+function writeUserData(userId,searchkey) {
+  firebase.database().ref('history/' + userId).push(searchkey);
+}
+
+function Result(){
+var word= document.getElementById("wname").value;
+var value = document.getElementById("result");
+ var dbRef = firebase.database().ref('dictionary/').child(word);
+
+var x = document.getElementById("POS").value;
+console.log(x);
+ dbRef.on('value', function(snapshot) { 
+  value.innerText= JSON.stringify(snapshot.val());
+});
+
+}
+
+function Reverse(){
+
+var str= document.getElementById("rname").value;
+
+//Save search result
+//Hardcoded here but later use current logged in User
+
+
+writeUserData(user,str);
+
+var value = document.getElementById("revresult");
+
+var words = str.split(" ");
+value.innerText = "";
+
+for (var i = 0; i < words.length; i++) {
+ var dbRef = firebase.database().ref('reverse/').child(words[i]);
+ dbRef.on('value', function(snapshot) { 
+ console.log(words[i],snapshot.val());
+ value.innerText +="\n"+JSON.stringify(snapshot.val());
+});
+
+}
+
+}
+
+function History(){
+  var value = document.getElementById("history");
+  var dbRef = firebase.database().ref('history/' + user);
+
+  // query example: a single value
+  dbRef.on('value', function(snapshot) { 
+     console.log("snapshot" + ": " + snapshot);
+
+    if(snapshot.val()!=null)
+        value.innerText = JSON.stringify(Object.values(snapshot.val()));
+
+
+  });
+
+ }
+
+</script>
+<b>History</b>
+<br>
+<span id="history"></span>
+</body>
+</html>

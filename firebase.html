@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+</head>
+<body>
+	<h1>Hello world</h1>
+	<script>
+		var config = {
+	    apiKey: "AIzaSyBK03WFa_R8L1am35E_SIC3FlmE2jaWdVA",
+	    authDomain: "inf551-2a2dd.firebaseapp.com",
+	    databaseURL: "https://inf551-2a2dd.firebaseio.com",
+	    projectId: "inf551-2a2dd",
+	    storageBucket: "inf551-2a2dd.appspot.com",
+	    messagingSenderId: "764354013863"
+	  };
+	  firebase.initializeApp(config);
+		var db = firebase.database();
+		var dbRef = db.ref('dictionary/').child('happy');
+		dbRef.on('value', function(snapshot) { 
+		  console.log(JSON.stringify(snapshot.val()));
+		});
+	</script>	
+</body>
+</html>
