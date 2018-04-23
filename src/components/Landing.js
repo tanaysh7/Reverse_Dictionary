@@ -28,6 +28,7 @@ const INITIAL_STATE = {
 			// me.setState({ search_word:word, result_definitions:temp_val.definitions, result_words:temp_val.words, 
 			// result_antonyms:temp_val.antonyms, 
 			// result_partofspeech:temp_val.partofspeech, result_synonyms:temp_val.synonyms });
+	reverse_results: true,
 	reverse_pos: '',
 	reverse_search_string: '', // important for updating cache
 	reverse_empty_input: false,
@@ -67,15 +68,21 @@ const Popperelement = (props) => {
 	// reverse_ensw_input
 	if(props.reverse_empty_input == true) {return (<div className="container"><h3>Empty Input</h3></div>)};
 	if(props.reverse_ensw_input == true) {return (<div className="container"><h3>Input contains only english stop words</h3></div>)};
+	// var empty_input_for_reverse = props.reverse_results;
+	// console.log(empty_input_for_reverse);
 	// btn-success green color
 	if (props.words !== null) {
-		let noun = props.words.n ? Array.from(props.words.n).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
+		// let noun = props.words.n ? Array.from(props.words.n).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
+		let noun = props.words.n;
 		// btn-warning orange color
-		let adjective = props.words.a ? Array.from(props.words.a).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
+		let adjective = props.words.a;
+		// let adjective = props.words.a ? Array.from(props.words.a).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
 		// btn-info light blue color
-		let verb = props.words.v ? Array.from(props.words.v).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
+		let verb = props.words.v;
+		// let verb = props.words.v ? Array.from(props.words.v).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
 		// btn-danger red color
-		let adverb = props.words.s ? Array.from(props.words.s).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
+		let adverb = props.words.s;
+		// let adverb = props.words.s ? Array.from(props.words.s).filter((value, index, self) => {return self.indexOf(value) == index;}) : null;
 		// let words = Array.from(props.words);
 		let defs = Array.from(props.defs);
 		var elements = [];
@@ -101,6 +108,12 @@ const Popperelement = (props) => {
 	 		elements.push(<button style={{"marginRight": "5px","marginBottom": "5px"}} key={index_counter} type="button" className="btn btn-lg btn-danger" title="dummy" data-container="body" data-toggle="popover" data-placement="top" data-content={defs}>{word}</button>)
 			index_counter += 1;
 		});
+		console.log("here "+props.reverse_results);
+		// debugger;
+		// get reverse_results == false here to trigger the if
+		if(!noun && !adjective && !verb && !adverb && props.words!==""){
+			elements = <h3>Sorry no matches found</h3>
+		}
 	} else {
 		var elements = <h3>Sorry couldn't find the word</h3>
 	}
@@ -228,6 +241,7 @@ class ReverseDictionaryForm extends Component {
 			$('[data-toggle="popover"]').popover()
 		})
 
+
 		if (this.state.reverse_empty_input==false && this.state.reverse_ensw_input==false && this.state.dictionary_empty_input==false && this.state.authUser !== null) {
 			var old_reverse = this.state.old_state.reverse;
 			var old_dictionary = this.state.old_state.dictionary;
@@ -273,6 +287,9 @@ class ReverseDictionaryForm extends Component {
 
 	reverseResult = (event) => {
 
+		this.setState({reverse_results:document.getElementById("rname").value===""});
+		console.log(this.state.reverse_results);
+		// debugger;
 		var str= document.getElementById("rname").value;
 		var ogstr = str;
 		if (str === "") {this.setState({reverse_empty_input:true, reverse_ensw_input:false})}
@@ -283,24 +300,44 @@ class ReverseDictionaryForm extends Component {
 			str = str.join(" ");
 			if (str === "") {this.setState({reverse_empty_input:false, reverse_ensw_input:true})}
 			else {
-				//Save search result
-				//Hardcoded here but later use current logged in User
-
-				// writeUserData(user,str);
-
 				var pos = document.getElementById("POS_reverse").value;
 				var words = str.split(" ");
 
-				for (var i = 0; i < words.length; i++) {
-					// if (pos === 'an'){
-					// 	console.log('any');
-					// 	var dbRef = db.getReverseValues('reverse',words[i], );
-					// } else {
-					db.getReverseValues(this, 'reverse', words[i], pos, (me, snapshot) => {
-							me.setState({ reverse_pos:pos, reverse_search_string:ogstr, reverse_ensw_input:false, reverse_empty_input:false, reverse_words:snapshot });	
+				db.getReverseValues(this, 'reverse', words, pos, (me, snapshot) => {
+							var result = {};
+							snapshot.map((word) => {
+								word && Object.keys(word).map((pos) => {
+									result[pos] ? result[pos] = result[pos].concat(word[pos].filter((key, i) => (word[pos].indexOf(key) == i))) : result[pos] = word[pos].filter((key, i) => (word[pos].indexOf(key) == i));
+								})
+							});
+							snapshot = result;
+							console.log(result);
+							Object.keys(snapshot).map((key) => {
+								var rev_words = snapshot[key];
+								var map = {};
+								rev_words.forEach(element => {
+									if (map[element]) {
+										map[element]++;
+									} else {
+										map[element] = 1;
+									}
+								});
+
+								window.map ? window.map.push(map) : window.map = [map];
+
+								var orderedResult = Object.keys(map).sort((a, b) => {
+									return map[b] - map[a]
+								});								
+
+
+								snapshot[key] = orderedResult;
+							});
+							me.setState({reverse_pos:pos, reverse_search_string:ogstr, reverse_ensw_input:false, reverse_empty_input:false, reverse_words:snapshot})
+
 						}
 					);
-				}
+					// console.log(val);
+				// }
 			}
 		}
 		event.preventDefault();
@@ -392,6 +429,7 @@ class ReverseDictionaryForm extends Component {
 										className="form-control"
 										// value={email}
 										// onChange={event => this.setState(byPropKey('email', event.target.value))}
+										ref="rnameref"
 										type="text"
 										id="rname"
 										// placeholder="Email Address"
@@ -413,7 +451,7 @@ class ReverseDictionaryForm extends Component {
 					</form>
 				</div>
 				<br/>
-				<Popperelement reverse_empty_input={this.state.reverse_empty_input} reverse_ensw_input={this.state.reverse_ensw_input} words={this.state.reverse_words} defs="dummy"/>
+				<Popperelement reverse_results={this.state.reverse_results} reverse_empty_input={this.state.reverse_empty_input} reverse_ensw_input={this.state.reverse_ensw_input} words={this.state.reverse_words} defs=""/>
 
 			</div>
 		)

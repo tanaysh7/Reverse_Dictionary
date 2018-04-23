@@ -28,20 +28,48 @@ export const getSearchHistory = (user) => {
 	return db.ref(query);	
 }
 
-export const getReverseValues = (me, tableName, word, pos, callback) => {
+// export const getReverseValues = (me, tableName, word, pos, callback) => {
+// 	var dbRef;
+// 	if (pos == 'an') {
+// 		dbRef = db.ref(`${tableName}/${word}`)
+// 		dbRef.on('value', (snapshot) => {
+// 			callback(me, snapshot.val());
+// 		});
+// 	} else {
+// 		dbRef = db.ref(`${tableName}/${word}/${pos}`)
+// 		dbRef.on('value', (snapshot) => {
+// 			var returnObj = {};
+// 			returnObj[pos] = snapshot.val(); 
+// 			callback(me, returnObj);
+// 		});
+// 	}
+// 	return 0;
+// }
+
+export const getReverseValues = (me, tableName, words, pos, callback) => {
 	var dbRef;
 	if (pos == 'an') {
-		dbRef = db.ref(`${tableName}/${word}`)
-		dbRef.on('value', (snapshot) => {
-			callback(me, snapshot.val());
-		});
+		Promise.all(
+			words.map((word) => {
+				return db.ref(`${tableName}/${word}`).once("value").then((snapshot) => {
+					return snapshot.val();
+				});
+			})
+		).then((snapshot) => {
+			callback(me, snapshot || []);
+		}); 
 	} else {
-		dbRef = db.ref(`${tableName}/${word}/${pos}`)
-		dbRef.on('value', (snapshot) => {
-			var returnObj = {};
-			returnObj[pos] = snapshot.val(); 
-			callback(me, returnObj);
-		});
+		Promise.all(
+			words.map((word) => {
+				return db.ref(`${tableName}/${word}/${pos}`).once("value").then((snapshot) => {
+					var returnObj = {};
+					returnObj[pos] = snapshot.val() || [];
+					return returnObj;
+				});
+			})
+		).then((snapshot) => {
+			callback(me, snapshot);
+		}); 
 	}
 	return 0;
 }
