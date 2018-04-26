@@ -1,4 +1,6 @@
-# Reverse Dictionary 
-- A dictionary for forgetful humans built using **React** and **Firebase**
-- Inspired by [reversedictionary.org](https://reversedictionary.org)
+# A Reverse Dictionary
+## that helps you find specific words from their meaning.
 
+* **Dictionary reference** - WordNet
+* **Languages** - Python, Javascript , HTML
+* **Cloud Store** - Firebase
